@@ -70,6 +70,39 @@ Ext.onReady(function(){
             ,handler:function() {
                 portal.removeAllItems();
             }
+        }, "->", {
+            nbColumns:1
+            ,scope:this
+            ,allowDepress:false
+            ,enableToggle:true
+            ,iconCls:"icon-column-1"
+            ,pressed:false
+            ,toggleGroup:"changeColumnsCount"
+            ,handler:function(btn) {
+                portal.changeColumnsCount(btn.nbColumns);
+            }
+        }, "-", {
+            nbColumns:2
+            ,scope:this
+            ,allowDepress:false
+            ,enableToggle:true
+            ,iconCls:"icon-column-2"
+            ,pressed:false
+            ,toggleGroup:"changeColumnsCount"
+            ,handler:function(btn) {
+                portal.changeColumnsCount(btn.nbColumns);
+            }
+        }, "-", {
+            nbColumns:3
+            ,scope:this
+            ,allowDepress:false
+            ,enableToggle:true
+            ,iconCls:"icon-column-3"
+            ,pressed:true
+            ,toggleGroup:"changeColumnsCount"
+            ,handler:function(btn) {
+                portal.changeColumnsCount(btn.nbColumns);
+            }
         }]
     });
 

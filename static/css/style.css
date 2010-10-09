@@ -6,6 +6,10 @@
     margin-bottom:10px;
 }
 
+.x-portal-mask-loading {
+    display:none;
+}
+
 /* Clean up the look of the portlets */
 .x-portlet .x-panel-ml {
     padding-left:2px;
@@ -31,4 +35,19 @@
 }
 .x-portlet .x-panel-nofooter .x-panel-bc {
     height:2px;
+}
+
+/* ICONS
+************************************************************/
+
+.icon-column-1 {
+    background:url("../img/column_1.png") no-repeat scroll 0 0 transparent !important;
+}
+
+.icon-column-2 {
+    background:url("../img/column_2.png") no-repeat scroll 0 0 transparent !important;
+}
+
+.icon-column-3 {
+    background:url("../img/column_3.png") no-repeat scroll 0 0 transparent !important;
 }

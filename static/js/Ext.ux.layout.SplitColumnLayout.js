@@ -313,3 +313,25 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
      */
 });
 Ext.Container.LAYOUTS['splitcolumn'] = Ext.layout.SplitColumnLayout;
+
+
+Ext.override(Ext.layout.SplitColumnLayout, {
+
+    getLayoutTargetSize : function() {
+        var target = this.container.getLayoutTarget(), ret;
+        if (target) {
+            ret = target.getViewSize();
+
+            // IE in strict mode will return a width of 0 on the 1st pass of getViewSize.
+            // Use getStyleSize to verify the 0 width, the adjustment pass will then work properly
+            // with getViewSize
+            if (Ext.isIE && Ext.isStrict && ret.width == 0){
+                ret =  target.getStyleSize();
+            }
+
+            ret.width -= target.getPadding('lr');
+            ret.height -= target.getPadding('tb');
+        }
+        return ret;
+    }
+});

@@ -15,6 +15,7 @@ function getPortlet($row) {
 	$portlet->itemId = $row['id'];
 	$portlet->columnIndex = $row['columnIndex'];
 	$portlet->weight = $row['weight'];
+	$portlet->collapsed = ($row['collapsed'] == 1) ? true : false;
 	return $portlet;
 }
 

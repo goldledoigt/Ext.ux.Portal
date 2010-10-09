@@ -6,6 +6,7 @@ function getPortlet($row) {
 	$portlet->itemId = $row['id'];
 	$portlet->columnIndex = $row['columnIndex'];
 	$portlet->weight = $row['weight'];
+	$portlet->collapsed = ($row['collapsed'] == 1) ? true : false;
 	return $portlet;
 }
 
@@ -39,6 +40,12 @@ else if ($R['xaction'] === 'getItems') {
 	}
 		
 }
+
+else if ($R['xaction'] === 'toggleItem') {
+	$query = 'UPDATE portlets SET collapsed = '.$R['collapsed'].' WHERE id = '.$R['id'];
+	$db->query($query);
+}
+
 
 $json['success'] = true;
 print json_encode($json);

@@ -6,9 +6,30 @@ Ext.ux.Portlet = Ext.extend(Ext.Panel, {
     ,cls:"x-portlet"
     
     ,initComponent:function() {
-        // this.title = false;
-        Ext.apply(this.items, {title:false});
+        
+        this.tools = [{
+            id:"maximize"
+            ,scope:this
+            ,qtip:"fullscreen"
+            ,handler:this.maximize
+        }, {
+            id:"close"
+            ,scope:this
+            ,qtip:"remove item"
+            ,handler:this.close
+        }];
+        
+        Ext.apply(this.items, {title:false, collapsed:false});
+
         Ext.ux.Portlet.superclass.initComponent.call(this, arguments);
+    }
+
+    ,close:function(e, tool, panel, options) {
+        this.fireEvent("close", panel);
+    }
+
+    ,maximize:function(e, tool, panel, options) {
+        this.fireEvent("maximize", panel);
     }
     
 });

@@ -34,6 +34,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             afterrender:function() {
                 this.initDropZone();
                 this.loadItems();
+                this.mask = new Ext.LoadMask(this.getEl(), {msgCls:"x-portal-mask-loading"});
             }
             ,drop:this.onItemMove
             ,removeItem:this.onRemoveItem
@@ -73,6 +74,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 ,weight:item.weight || 0
                 ,rendered:false
                 ,itemId:item.itemId
+                ,collpased:item.collapsed
                 ,config:Ext.apply({}, item)
             });
         }, this);
@@ -84,12 +86,13 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         this.store.clear();
         this.items.each(function(column) {
             while (i = column.items.last())
-                this.removeItem(column, i);
+                this.removeItem(i, column);
             column.doLayout();
         }, this);
     }
 
-    ,removeItem:function(column, item) {
+    ,removeItem:function(item, column) {
+        if (!column) column = item.ownerCt;
         column.remove(item, true);
         this.fireEvent("removeitem", item);
     }
@@ -120,7 +123,15 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         var column = this.getItemColumn(item);
         var config = {
             title:item.config.title
+            ,collapsed:item.config.collapsed
             ,items:item.config
+            ,listeners:{
+                scope:this
+                ,collapse:this.onItemToggle
+                ,expand:this.onItemToggle
+                ,close:this.onItemClose
+                ,maximize:this.onItemMaximize
+            }
         };
         column.add(config);
         item.rendered = true;
@@ -181,12 +192,171 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             return "10px 0 10px 10px";
         else if (colIndex < this.columnCount - 1)
             return "10px 0px 10px 5px";
-        else return "10px 10px 10px 5px"
+        else return "10px 10px 10px 5px";
+    }
+
+    ,changeColumnsCount:function(n) {
+        if (this.columnCount > n) {
+
+            var hiddenColumns = [];
+            var availableColumns = [];
+            this.items.each(function(c, index) {
+                c.columnIndex = index;
+                if (index + 1 > n) {
+                    hiddenColumns.push(c);
+                } else {
+                    availableColumns.push(c);
+                }
+            }, this);
+            this.hideColumns(hiddenColumns, availableColumns);
+
+        } else {
+            // this.setItemsPositions(this.columnsCount);
+            var shownColumns = [];
+            var availableColumns = [];
+            this.items.each(function(c, index) {
+                if (index + 1 > this.columnCount && index + 1 <= n) {
+                    shownColumns.push(c);
+                } else {
+                    availableColumns.push(c);
+                }
+            }, this);
+            this.showColumns(shownColumns, availableColumns);
+        }
+
+        // (function() {
+        //     console.log("force layout");
+            this.getLayout().onResize();
+            // this.doLayout();
+        // }).defer(3000, this);
+
+        this.columnCount = n;
+    }
+
+    ,showColumns:function(columns, availableColumns) {
+        Ext.each(columns, function(c, index) {
+            c.show();
+            Ext.each(availableColumns, function(ac) {
+                ac.items.each(function(item) {
+                    if (item.columnIndex === c.columnIndex) {
+                        this.moveItem(item, c);
+                    }
+                }, this);
+            }, this);
+        }, this);
+        Ext.each(columns, function(c) {
+            c.doLayout();
+        });
+    }
+
+    ,hideColumns:function(columns, availableColumns) {
+        var items = [];
+        Ext.each(columns, function(column, index) {
+            Ext.each(column.items.items, function(item) {
+                item.columnIndex = column.columnIndex;
+                items.push(item);
+            });
+            column.visibleWidth = column.el.getWidth();
+            column.hide();
+        }, this);
+        Ext.each(items, function(item, index) {
+            targetColumn = this.getTargetColumn(availableColumns);
+            this.moveItem(item, targetColumn);
+        }, this);
+        Ext.each(availableColumns, function(c) {
+            c.doLayout();
+        });
+    }
+
+    ,getTargetColumn:function(availableColumns) {
+        var col = null;
+        var count = false;
+        Ext.each(availableColumns, function(c) {
+            if (count === false || count > c.items.items.length) {
+                col = c;
+                count = c.items.items.length;
+            }
+        });
+        return col;
+    }
+
+    ,moveItem:function(item, column) {
+        item.el.dom.parentNode.removeChild(item.el.dom);
+        column.add(item);
     }
 
     ,itemExists:function(itemId) {
         var items = this.store.filter("itemId", itemId);
         return items.getCount();
+    }
+
+    ,resizeFullScreenItem:function(portal, width, height) {
+        // this.mask.show();
+        var size = this.getLayout().getLayoutTargetSize();
+        size.height -= Ext.getScrollBarWidth();
+        size.width -= Ext.getScrollBarWidth();
+        this.fullScreenCmp.setSize(size);
+        this.fullScreenCmp.doLayout();
+    }
+
+    ,onItemClose:function(item) {
+        if (item.fullScreen)
+            this.onItemMinimize(item);
+        else this.removeItem(item);
+    }
+
+    ,onItemMinimize:function(item) {
+        this.mask.hide();
+        var el = item.getEl();
+        var ctn = this.body.dom.firstChild;
+        Ext.fly(ctn).setStyle("position", "relative");
+        el.setStyle({position:"inherit", "z-index":0});
+        this.un("bodyresize", this.resizeFullScreenItem);
+        var parent = item.getEl().parent();
+        item.fullScreen.width = parent.getWidth() - parent.getPadding("lr");
+        item.setSize(item.fullScreen);
+        item.getEl().frame();
+        item.fullScreen = false;
+        this.fullScreenCmp = false;
+    }
+
+    ,onItemMaximize:function(item) {
+        if (item.collapsed) return;
+        if (item.fullScreen) {
+            this.onItemMinimize(item);
+            return;
+        }
+        this.mask.show();
+        var el = item.getEl();
+        var firstColumnEl = this.items.itemAt(0).getEl();
+        this.on("bodyresize", this.resizeFullScreenItem);
+        item.fullScreen = item.getSize();
+        var leftPadding = firstColumnEl.getPadding("l") - Ext.isIE;
+        var topPadding = firstColumnEl.getPadding("t") - Ext.isIE;
+        var pos = firstColumnEl.getXY();
+        var size = this.getLayout().getLayoutTargetSize();
+        pos[0] += leftPadding;
+        pos[1] += topPadding;
+        size.height -= Ext.getScrollBarWidth();
+        size.width -= Ext.getScrollBarWidth();
+        var ctn = this.body.dom.firstChild;
+        Ext.get(ctn).setStyle("position", "static");
+        el.setStyle({position:"absolute", "z-index":20002 /* higher than loadmask msg box (20001) */ });
+        item.setPagePosition(pos[0], pos[1]);
+        item.setSize(size);
+        item.doLayout();
+        this.fullScreenCmp = item;
+    }
+
+    ,onItemToggle:function(item) {
+        Ext.Ajax.request({
+            url:this.url
+            ,params:{
+                xaction:"toggleItem"
+                ,id:item.items.itemAt(0).itemId
+                ,collapsed:item.collapsed
+            }
+        });
     }
 
     ,onItemMove:function(e) {
