@@ -82,6 +82,24 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
      */
     fitHeight: false,
 
+    getLayoutTargetSize : function() {
+        var target = this.container.getLayoutTarget(), ret;
+        if (target) {
+            ret = target.getViewSize();
+
+            // IE in strict mode will return a width of 0 on the 1st pass of getViewSize.
+            // Use getStyleSize to verify the 0 width, the adjustment pass will then work properly
+            // with getViewSize
+            if (Ext.isIE && Ext.isStrict && ret.width == 0){
+                ret =  target.getStyleSize();
+            }
+
+            ret.width -= target.getPadding('lr');
+            ret.height -= target.getPadding('tb');
+        }
+        return ret;
+    },
+
     // private
     isValidParent : function(c, target){
         return c.getEl().dom.parentNode == this.innerCt.dom;
@@ -102,7 +120,7 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
     },
 
     // private
-    onLayout : function(ct, target){
+    onLayout : function(ct, target) {
         var cs = ct.items.items, len = cs.length, c, cel, i;
 
         if(!this.innerCt) {
@@ -134,11 +152,11 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
         if(this.fitHeight){
             this.innerCt.setSize(w, h);
         } else {
-            this.innerCt.setWidth(w/*Ext.getScrollBarWidth()*/);
+            this.innerCt.setWidth(w);
         }
         // some columns can be percentages while others are fixed
         // so we need to make 2 passes
-		var lastProportionedColumn;
+		var lastProportionedColumn, vc = 0;
         for(i = 0; i < len; i++){
             c = cs[i];
             cel = c.getEl();
@@ -152,6 +170,7 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
             } else {
                 pw -= (c.getSize().width + cel.getMargins('lr'));
             }
+            if (!c.hidden) vc++;
         }
 
 //      Keep track of remaining unallocated width. Last proportioned column takes all remaining width.
@@ -159,11 +178,15 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         var splitterPos = 0;
 
+        this.setLastColumnWidth(cs);
+        var cw = 0;
+
         for(i = 0; i < len; i++){
             c = cs[i];
             cel = c.getEl();
-            if(c.columnWidth){
-            	var w = (i == lastProportionedColumn) ? remaining : Math.floor(c.columnWidth * pw);
+            if(c.columnWidth) {
+                cw = this.getLastColumnWidth(i, vc);
+            	var w = (i == lastProportionedColumn) ? remaining : Math.floor(/*c.columnWidth*/cw * pw);
                 if(this.fitHeight){
                     c.setSize(w - cel.getMargins('lr'), h);
                 } else {
@@ -288,20 +311,50 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 */
     },
 
+    getLastColumnWidth:function(index, visibleColumnsCount) {
+        return this.lastColumnsWidth[visibleColumnsCount-1][index];
+    }
+
+    ,setLastColumnWidth:function(columns) {
+        if (!columns[0].columnWidth) return;
+        var vc = 0, hcp = 0;
+        for (var i = 0, l = columns.length; i < l; i++) {
+            if (columns[i].hidden) hcp += columns[i].columnWidth;
+            else vc++;
+        }
+        var index = vc - 1;
+        if (!this.lastColumnsWidth)
+            this.lastColumnsWidth = [];
+        if (!this.lastColumnsWidth[index])
+            this.lastColumnsWidth[index] = [];
+        if (this.lastColumnsWidth[index][0]) return;
+        for (var i = 0, l = columns.length; i < l; i++) {
+            if (!columns[i].hidden)
+                this.lastColumnsWidth[index][i] = columns[i].columnWidth + hcp/vc;
+        }
+    },
+
     onResize: function() {
         if (this.split) {
             var items = this.container.items.items;
+
+            // if (items[0].columnWidth)
+            //     this.setLastColumnWidth();
+            
             if (items[0].rendered) {
-                
-                var tw = 0;
+                var tw = 0, vc = 0;
+
                 for (var i = 0; i < items.length; i++) {
                     var c = items[i];
                     tw += c.el.getWidth() + c.el.getMargins('lr');
+                    if (!c.hidden) vc++;
                 }
+
                 for (var i = 0; i < items.length; i++) {
                     var c = items[i];
                     c.columnWidth = (c.el.getWidth() + c.el.getMargins('lr')) / tw;
                 }
+
             }
         }
         Ext.layout.SplitColumnLayout.superclass.onResize.apply(this, arguments);
@@ -313,25 +366,3 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
      */
 });
 Ext.Container.LAYOUTS['splitcolumn'] = Ext.layout.SplitColumnLayout;
-
-
-Ext.override(Ext.layout.SplitColumnLayout, {
-
-    getLayoutTargetSize : function() {
-        var target = this.container.getLayoutTarget(), ret;
-        if (target) {
-            ret = target.getViewSize();
-
-            // IE in strict mode will return a width of 0 on the 1st pass of getViewSize.
-            // Use getStyleSize to verify the 0 width, the adjustment pass will then work properly
-            // with getViewSize
-            if (Ext.isIE && Ext.isStrict && ret.width == 0){
-                ret =  target.getStyleSize();
-            }
-
-            ret.width -= target.getPadding('lr');
-            ret.height -= target.getPadding('tb');
-        }
-        return ret;
-    }
-});

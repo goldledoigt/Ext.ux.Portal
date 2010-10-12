@@ -1,4 +1,5 @@
-Ext.onReady(function(){
+var PORTAL;
+Ext.onReady(function() {
 
     Ext.QuickTips.init();
 
@@ -119,5 +120,7 @@ Ext.onReady(function(){
         layout:"border"
         ,items:[tree, portal]
     });
+
+    PORTAL = portal;
 
 });

@@ -81,33 +81,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         this.renderItems(stopEvent);
     }
 
-    ,removeAllItems:function() {
-        var i;
-        this.store.clear();
-        this.items.each(function(column) {
-            while (i = column.items.last())
-                this.removeItem(i, column);
-            column.doLayout();
-        }, this);
-    }
-
-    ,removeItem:function(item, column) {
-        if (!column) column = item.ownerCt;
-        column.remove(item, true);
-        this.fireEvent("removeitem", item);
-    }
-
-    ,onRemoveItem:function(item) {
-        Ext.Ajax.request({
-            url:this.url
-            ,scope:this
-            ,params:{
-                xaction:"removeItem"
-                ,id:item.initialConfig.items.itemId
-            }
-        });
-    }
-
     ,renderItems:function(stopEvent) {
         var items = this.store.filter("rendered", false);
         items.sort("ASC", function(a, b) {
@@ -116,7 +89,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         items.each(function(item) {
             this.renderItem(item, stopEvent);
         }, this);
-        this.getLayout().onResize();
+        // this.getLayout().onResize();
     }
 
     ,renderItem:function(item, stopEvent) {
@@ -161,6 +134,33 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         return index;
     }
 
+    ,removeAllItems:function() {
+        var i;
+        this.store.clear();
+        this.items.each(function(column) {
+            while (i = column.items.last())
+                this.removeItem(i, column);
+            column.doLayout();
+        }, this);
+    }
+
+    ,removeItem:function(item, column) {
+        if (!column) column = item.ownerCt;
+        column.remove(item, true);
+        this.fireEvent("removeitem", item);
+    }
+
+    ,onRemoveItem:function(item) {
+        Ext.Ajax.request({
+            url:this.url
+            ,scope:this
+            ,params:{
+                xaction:"removeItem"
+                ,id:item.initialConfig.items.itemId
+            }
+        });
+    }
+    
     ,initDropZone:function() {
         this.dropZone = new Ext.dd.DropZone(this.body, {
             ddGroup:this.ddGroup
@@ -179,7 +179,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             width = 1/this.columnCount;
             columns.push({
                 columnWidth:width
-                // ,hideMode:"offsets"
+                ,hideMode:"offsets"
                 ,style:style
                 ,items:[]
             });
@@ -211,7 +211,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             this.hideColumns(hiddenColumns, availableColumns);
 
         } else {
-            // this.setItemsPositions(this.columnsCount);
             var shownColumns = [];
             var availableColumns = [];
             this.items.each(function(c, index) {
@@ -223,12 +222,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             }, this);
             this.showColumns(shownColumns, availableColumns);
         }
-
-        // (function() {
-        //     console.log("force layout");
-            this.getLayout().onResize();
-            // this.doLayout();
-        // }).defer(3000, this);
+        this.getLayout().onResize();
 
         this.columnCount = n;
     }
@@ -247,12 +241,13 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         Ext.each(columns, function(c) {
             c.doLayout();
         });
+        this.getLayout().onResize();
     }
 
     ,hideColumns:function(columns, availableColumns) {
         var items = [];
         Ext.each(columns, function(column, index) {
-            Ext.each(column.items.items, function(item) {
+            column.items.each(function(item) {
                 item.columnIndex = column.columnIndex;
                 items.push(item);
             });
