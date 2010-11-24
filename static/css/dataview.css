@@ -1,0 +1,66 @@
+/*!
+ * Ext JS Library 3.3.0
+ * Copyright(c) 2006-2010 Ext JS, Inc.
+ * licensing@extjs.com
+ * http://www.extjs.com/license
+ */
+.images-view .x-panel-body{
+	background: white;
+	font: 11px Arial, Helvetica, sans-serif;
+}
+.images-view .thumb{
+/*  background: #dddddd;*/
+x	padding: 3px;
+}
+.images-view .thumb img {
+	height: 60px;
+	width: 80px;
+	border: 2px solid #DDDDDD;
+	-moz-border-radius: 3px 3px 3px 3px;
+}
+.images-view .thumb-wrap {
+	float: left;
+	margin: 4px;
+	margin-right: 0;
+	padding: 5px;
+	cursor:pointer;
+}
+.images-view .thumb-wrap span {
+	display: block;
+	overflow: hidden;
+	text-align: center;
+	font-family: tahoma;
+    font-size: 11px;
+    color:white;
+}
+
+.images-view .x-view-over {
+    background: url("../../resources/images/default/grid/row-over.gif") repeat-x scroll left top #444444;
+    border:1px solid #444;
+    padding:4px;
+    -moz-border-radius:3px;
+}
+
+.images-view .x-view-over span {
+x    color:black;
+}
+
+/*.images-view .x-view-selected{
+    background: #eff5fb url(images/selected.gif) no-repeat right bottom;
+    border:1px solid #99bbe8;
+    padding: 4px;
+}
+*/
+
+.images-view .x-view-selected .thumb{
+	background:transparent;
+}
+
+.images-view .loading-indicator {
+	font-size:11px;
+	background-image:url('../../resources/images/default/grid/loading.gif');
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left:20px;
+	margin:10px;
+}

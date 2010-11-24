@@ -189,9 +189,9 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,getColumnPadding:function(colIndex) {
         if (colIndex === 0)
-            return "10px 0 10px 10px";
+            return "10px 2px 10px 10px";
         else if (colIndex < this.columnCount - 1)
-            return "10px 0px 10px 5px";
+            return "10px 2px 10px 5px";
         else return "10px 10px 10px 5px";
     }
 
