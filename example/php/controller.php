@@ -1,12 +1,13 @@
 <?php
 
 function getPortlet($row) {
-	$portlet = json_decode($row['config']);
-	$portlet->title = 'Widget '. $row['id'];
-	$portlet->itemId = $row['id'];
-	$portlet->columnIndex = $row['columnIndex'];
-	$portlet->weight = $row['weight'];
-	$portlet->collpased = ($row['collapsed'] === 1) ? true : false;
+	$portlet = array();
+	$portlet['config'] = json_decode($row['config']);
+	$portlet['title'] = $row['label'];
+	$portlet['itemId'] = $row['id'];
+	$portlet['columnIndex'] = $row['columnIndex'];
+	$portlet['weight'] = $row['weight'];
+	$portlet['collapsed'] = ($row['collapsed'] === 1) ? true : false;
 	return $portlet;
 }
 
@@ -36,9 +37,13 @@ else if ($R['xaction'] === 'getItems') {
 	$query = 'SELECT * FROM portlets WHERE enabled = 1';
 	$res = $db->query($query);
 	while ($row = $db->getAssoc($res)) {
-		$json['items'][] = getPortlet($row);
-	}
-		
+		$json['data'][] = getPortlet($row);
+	}	
+}
+
+else if ($R['xaction'] === 'saveConfig') {
+	$query = "UPDATE portlets SET config = '".$R['config']."' WHERE id = ".$R['id'];
+	$db->query($query);
 }
 
 $json['success'] = true;

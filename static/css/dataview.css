@@ -4,6 +4,11 @@
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
+ 
+ .images-view {
+     padding-top:15px;
+ }
+ 
 .images-view .x-panel-body{
 	background: white;
 	font: 11px Arial, Helvetica, sans-serif;
@@ -35,8 +40,9 @@ x	padding: 3px;
 }
 
 .images-view .x-view-over {
-    background: url("../../resources/images/default/grid/row-over.gif") repeat-x scroll left top #444444;
-    border:1px solid #444;
+x    background: url("../img/row-over.gif") repeat-x scroll left top #444444;
+    background-color:#444444;
+    border:1px solid #555555;
     padding:4px;
     -moz-border-radius:3px;
 }
@@ -45,12 +51,14 @@ x	padding: 3px;
 x    color:black;
 }
 
-/*.images-view .x-view-selected{
-    background: #eff5fb url(images/selected.gif) no-repeat right bottom;
-    border:1px solid #99bbe8;
+.images-view .x-view-selected{
+x    background: #eff5fb url("../img/selected.gif") no-repeat right bottom;
+    background-color:#222222;
+    -moz-border-radius:3px;
+    border:1px solid #333333;
     padding: 4px;
 }
-*/
+
 
 .images-view .x-view-selected .thumb{
 	background:transparent;
@@ -58,7 +66,7 @@ x    color:black;
 
 .images-view .loading-indicator {
 	font-size:11px;
-	background-image:url('../../resources/images/default/grid/loading.gif');
+	background-image:url('../img/loading.gif');
 	background-repeat: no-repeat;
 	background-position: left;
 	padding-left:20px;

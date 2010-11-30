@@ -39,53 +39,81 @@
 
 /* CHANEL
 ************************************************************/
-
+/*
 body {
     font-family:tahoma;
     background-color:black;
 }
 
-.header-bar {
-    height:22px;
-    background-color:white;
-    position:relative;
-    top:20px
+*/
+#header {
+    background-color:black;
+    height:60px;
+    color:white;
 }
 
-.header-link.pressed {
-    background-color: black !important;
-    color: white;
+#header #logo {
+    float:right;
+    margin-right:20px;
 }
 
-.header-link {
-    font-size:12px;
-    padding:4px 5px 5px 25px;
-    position: relative;
-    top:-1px;
+#header #tools {
+    float:left;
+}
+
+#header #tools .tool {
+    float:left;
+    height:60px;
+    width:100px;
     cursor:pointer;
 }
 
-a.header-link:hover {
-    text-decoration:underline;
+#header #tools #quick-access {
+    background:url("../img/icons/quickAccess_off.jpg") no-repeat scroll 0 0 transparent;
 }
 
-a.header-link.pressed:hover {
-    text-decoration:none;
+#header #tools #add-widget {
+    background:url("../img/icons/addWidget_off.jpg") no-repeat scroll 0 0 transparent;
 }
 
-.header-logo {
-    background-color:black;
-    color:white;
-    float:right;
-    font-size:22px;
-    margin-right:200px;
+#header #tools #settings {
+    background:url("../img/icons/settings_off.jpg") no-repeat scroll 0 0 transparent;
 }
 
-.header-logo img {
-    background-color:black;
-    padding:0 8px;
-    position:absolute;
-    top:-1px;
+#header #tools #quick-access:hover, #header #tools #quick-access.pressed {
+    background:url("../img/icons/quickAccess_on.jpg") no-repeat scroll 0 0 transparent;
+}
+
+#header #tools #add-widget:hover, #header #tools #add-widget.pressed {
+    background:url("../img/icons/addWidget_on.jpg") no-repeat scroll 0 0 transparent;
+}
+
+#header #tools #settings:hover, #header #tools #settings.pressed {
+    background:url("../img/icons/settings_on.jpg") no-repeat scroll 0 0 transparent;
+}
+/*
+.x-btn-text.selected {
+    color:#FFFFFF;
+}
+
+.chanel-widget-panel {
+    background:url("../img/template/fond_zoneWidget_empty.jpg") repeat-x scroll 0 0 transparent;
+    border-top:1px solid #777777 !important;
+}
+
+.chanel-filters-panel {
+    background:url("../img/template/fond_zoneWidget_filters.jpg") repeat-x scroll 0 bottom transparent;
+}
+
+.chanel-filters-panel label {
+    color:#ACACAC;
+    font-size:11px;
+    margin-top:-1px;
+}
+
+.chanel-filters-panel table {
+x    margin-left: 15px;
+    margin-top: -10px;
 }
 
 ul.x-tab-strip li {
@@ -116,6 +144,8 @@ ul.x-tab-strip li {
     overflow: hidden;
     position: relative;
     width: 100%;
+    padding-top:20px;
+    background:url("../img/template/bande_hachures.gif") repeat-x scroll 0 0 white;
 }
 
 .x-portlet {
@@ -126,9 +156,9 @@ ul.x-tab-strip li {
 }
 
 .x-panel-tl {
-    background: none no-repeat scroll 0 0 #000000;
+    background:url("../img/template/fondHautWidget.jpg") repeat-x scroll 0 0 #000000;
     border-bottom: 1px solid;
-    color: white;
+    color:#000000;
     font-family: tahoma;
     font-size: 14px;
     padding-bottom: 2px;
@@ -141,17 +171,120 @@ ul.x-tab-strip li {
     border-width:0 !important;
 }
 
-.x-tool {
-    margin-left: 6px;
+.x-portlet .x-tool {
+    margin-left:0px;
+    width:28px;
+    height:28px;
+}
+
+.x-portlet .x-panel-header {
+    padding:0;
+}
+
+.x-portlet .x-panel-header-text {
+    display: block;
+    font-weight: bold;
+    margin: 5px 0 0 5px;
+}
+
+.x-portlet .x-panel-tr, .x-portlet .x-panel-tl {
+    padding:0;
 }
 
 .x-tool-close {
-    background:url("../img/delete.png") no-repeat scroll 0 0 transparent;
+    background:url("../img/template/picto_fermer_off.jpg") no-repeat scroll 0 0 transparent;
+}
+
+.x-tool-close-over {
+    background:url("../img/template/picto_fermer_on.jpg") no-repeat scroll 0 0 transparent;
 }
 
 .x-tool-maximize {
-    background:url("../img/expand.png") no-repeat scroll 0 0 transparent;
+    background:url("../img/template/picto_agrandir_off.jpg") no-repeat scroll 0 0 transparent;
 }
+
+.x-tool-maximize-over {
+    background:url("../img/template/picto_agrandir_on.jpg") no-repeat scroll 0 0 transparent;
+}
+
+.x-tool-toggle {
+    background:url("../img/template/picto_reduire_off.jpg") no-repeat scroll 0 0 transparent;
+}
+
+.x-tool-toggle-over {
+    background:url("../img/template/picto_reduire_on.jpg") no-repeat scroll 0 0 transparent;
+}
+
+.x-panel-collapsed .x-tool-toggle {
+    background-position: 0 0;
+}
+
+.x-window-tl {
+    background-color:#222222;
+    color:white;
+    -moz-border-radius: 3px 3px 0 0;
+}
+
+.x-window-mc {
+    border: 1px solid #CCCCCC;
+}
+
+.x-window-bwrap {
+    background-color:#222222;
+    -moz-border-radius: 0 0 3px 3px;
+}
+
+.ext-el-mask {
+    background-color:black;
+}
+
+.x-window-body {
+    background-color:#AAAAAA;
+}
+
+.widget-window {
+    padding-left:70px;
+}
+
+.widget-window-info {
+    color: #444444;
+    font-size: 11px;
+}
+
+.x-shadow {
+    -moz-border-radius: 3px 3px 3px 3px;
+    background-color: black;
+    opacity: 0.1;
+}
+
+.green-button {
+    cursor:pointer;
+    -moz-border-radius: 3px 3px 3px 3px;
+    background-color: green;
+    border: 1px solid darkgreen;
+    color: white;
+    font-size: 13px;
+    margin-top: 10px;
+    text-align: center;
+    width: 190px;
+    padding: 2px 0;
+    left: -40px;
+    position:relative;
+}
+
+.group-link {
+    -moz-border-radius: 3px 3px 3px 3px;
+    background-color: #333333;
+    color: white;
+    font-size: 12px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    padding: 2px 2px 5px 6px;
+    width: 80px;
+    cursor:pointer;
+}
+*/
+
 
 /* ICONS
 ************************************************************/

@@ -53,8 +53,9 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,loadItems:function() {
+        // console.log("LOAD ITEMS", arguments);
         var callback = function(options, success, response) {
-            var items = Ext.decode(response.responseText).items;
+            var items = Ext.decode(response.responseText).data;
             this.addItems(items, true);
         };
         Ext.Ajax.request({
@@ -66,16 +67,26 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,addItems:function(items, stopEvent) {
+        //console.log("ITEMS TO ADD", items, items[0].config.collapsed);
         if (!items) return false;
         items = Ext.isArray(items) ? items : [items];
         Ext.each(items, function(item, index) {
+            console.log("item", {
+                columnIndex:item.columnIndex || false
+                ,weight:item.weight || 0
+                ,rendered:false
+                ,itemId:item.itemId
+                ,collapsed:item.collapsed
+                ,config:item.config
+            }, item.config.collapsed);
             this.store.add({
                 columnIndex:item.columnIndex || false
                 ,weight:item.weight || 0
                 ,rendered:false
                 ,itemId:item.itemId
-                ,collpased:item.collapsed
-                ,config:Ext.apply({}, item)
+                ,collapsed:item.collapsed
+                ,config:item.config
+                ,title:item.title
             });
         }, this);
         this.renderItems(stopEvent);
@@ -93,10 +104,12 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,renderItem:function(item, stopEvent) {
+        console.log("ITEM*", item, item.config.collapsed);
         var column = this.getItemColumn(item);
         var config = {
-            title:item.config.title
-            ,collapsed:item.config.collapsed
+            title:item.title
+            ,itemId:item.itemId
+            ,collapsed:item.collapsed
             ,items:item.config
             ,listeners:{
                 scope:this
@@ -104,8 +117,10 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 ,expand:this.onItemToggle
                 ,close:this.onItemClose
                 ,maximize:this.onItemMaximize
+                ,saveconfig:this.onSaveConfig
             }
         };
+        console.log("CONFIG", config.items.collapsed);
         column.add(config);
         item.rendered = true;
         column.doLayout();
@@ -160,7 +175,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             }
         });
     }
-    
+
     ,initDropZone:function() {
         this.dropZone = new Ext.dd.DropZone(this.body, {
             ddGroup:this.ddGroup
@@ -169,7 +184,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             }).createDelegate(this)
             ,onNodeOver:this.onNodeOver
             ,onNodeDrop:this.onNodeDrop
-        });        
+        });
     }
 
     ,getColumnsConfig:function() {
@@ -196,6 +211,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,changeColumnsCount:function(n) {
+        if (!this.rendered) return;
         if (this.columnCount > n) {
 
             var hiddenColumns = [];
@@ -367,6 +383,22 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 ,id:item.itemId
                 ,columnIndex:columnIndex
                 ,weight:weight
+            }
+        });
+    }
+
+    ,onSaveConfig:function(item, extraConfig) {
+        // console.log("saveConfig", arguments);
+        var index = this.store.findIndex("itemId", item.itemId);
+        var record = this.store.itemAt(index);
+        if (record.config.collapsed !== undefined) delete record.config.collapsed;
+        console.log("onSaveConfig", arguments, index, record, record.config.collapsed);
+        Ext.Ajax.request({
+            url:this.url
+            ,params:{
+                xaction:"saveConfig"
+                ,id:item.itemId
+                ,config:Ext.encode(Ext.apply(record.config, extraConfig))
             }
         });
     }

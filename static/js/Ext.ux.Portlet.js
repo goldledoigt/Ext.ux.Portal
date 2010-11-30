@@ -10,12 +10,12 @@ Ext.ux.Portlet = Ext.extend(Ext.Panel, {
         this.tools = [{
             id:"maximize"
             ,scope:this
-            ,qtip:"fullscreen"
+            // ,qtip:"fullscreen"
             ,handler:this.maximize
         }, {
             id:"close"
             ,scope:this
-            ,qtip:"remove item"
+            // ,qtip:"remove item"
             ,handler:this.close
         }];
         
