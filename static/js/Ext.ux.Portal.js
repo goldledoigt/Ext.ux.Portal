@@ -53,7 +53,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,loadItems:function() {
-        // console.log("LOAD ITEMS", arguments);
         var callback = function(options, success, response) {
             var items = Ext.decode(response.responseText).data;
             this.addItems(items, true);
@@ -67,25 +66,16 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,addItems:function(items, stopEvent) {
-        //console.log("ITEMS TO ADD", items, items[0].config.collapsed);
         if (!items) return false;
         items = Ext.isArray(items) ? items : [items];
         Ext.each(items, function(item, index) {
-            console.log("item", {
-                columnIndex:item.columnIndex || false
-                ,weight:item.weight || 0
-                ,rendered:false
-                ,itemId:item.itemId
-                ,collapsed:item.collapsed
-                ,config:item.config
-            }, item.config.collapsed);
             this.store.add({
                 columnIndex:item.columnIndex || false
                 ,weight:item.weight || 0
                 ,rendered:false
                 ,itemId:item.itemId
                 ,collapsed:item.collapsed
-                ,config:item.config
+                ,items:item.config
                 ,title:item.title
             });
         }, this);
@@ -104,24 +94,8 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,renderItem:function(item, stopEvent) {
-        console.log("ITEM*", item, item.config.collapsed);
         var column = this.getItemColumn(item);
-        var config = {
-            title:item.title
-            ,itemId:item.itemId
-            ,collapsed:item.collapsed
-            ,items:item.config
-            ,listeners:{
-                scope:this
-                ,collapse:this.onItemToggle
-                ,expand:this.onItemToggle
-                ,close:this.onItemClose
-                ,maximize:this.onItemMaximize
-                ,saveconfig:this.onSaveConfig
-            }
-        };
-        console.log("CONFIG", config.items.collapsed);
-        column.add(config);
+        column.add(item);
         item.rendered = true;
         column.doLayout();
         if (!stopEvent)
@@ -388,11 +362,9 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,onSaveConfig:function(item, extraConfig) {
-        // console.log("saveConfig", arguments);
         var index = this.store.findIndex("itemId", item.itemId);
         var record = this.store.itemAt(index);
         if (record.config.collapsed !== undefined) delete record.config.collapsed;
-        console.log("onSaveConfig", arguments, index, record, record.config.collapsed);
         Ext.Ajax.request({
             url:this.url
             ,params:{
