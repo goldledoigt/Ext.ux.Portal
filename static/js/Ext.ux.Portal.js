@@ -66,6 +66,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,addItems:function(items, stopEvent) {
+        console.log("addItems", items);
         if (!items) return false;
         items = Ext.isArray(items) ? items : [items];
         Ext.each(items, function(item, index) {
@@ -95,7 +96,15 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,renderItem:function(item, stopEvent) {
         var column = this.getItemColumn(item);
-        column.add(item);
+        column.add(Ext.apply(item, {
+            listeners:{
+                scope:this
+                ,collapse:this.onItemToggle
+                ,expand:this.onItemToggle
+                ,close:this.onItemClose
+                ,maximize:this.onItemMaximize
+            }
+        }));
         item.rendered = true;
         column.doLayout();
         if (!stopEvent)
@@ -140,12 +149,13 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,onRemoveItem:function(item) {
+        console.log("ITEM", item);
         Ext.Ajax.request({
             url:this.url
             ,scope:this
             ,params:{
                 xaction:"removeItem"
-                ,id:item.initialConfig.items.itemId
+                ,id:item.initialConfig.itemId
             }
         });
     }
