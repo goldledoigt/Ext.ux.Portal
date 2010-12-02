@@ -6,7 +6,6 @@ Ext.ux.Portlet = Ext.extend(Ext.Panel, {
     ,cls:"x-portlet"
     
     ,initComponent:function() {
-        
         this.tools = [{
             id:"maximize"
             ,scope:this

@@ -38,7 +38,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             }
             ,drop:this.onItemMove
             ,removeItem:this.onRemoveItem
-            ,setitemposition:this.onSetItemPosition
+            ,itemadd:this.onItemAdd
         });
     }
 
@@ -66,7 +66,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,addItems:function(items, stopEvent) {
-        console.log("addItems", items);
         if (!items) return false;
         items = Ext.isArray(items) ? items : [items];
         Ext.each(items, function(item, index) {
@@ -75,9 +74,9 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 ,weight:item.weight || 0
                 ,rendered:false
                 ,itemId:item.itemId
-                ,collapsed:item.collapsed
+                ,collapsed:item.collapsed || false
                 ,items:item.config
-                ,title:item.title
+                ,title:item.title || "Widget"
             });
         }, this);
         this.renderItems(stopEvent);
@@ -96,19 +95,21 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,renderItem:function(item, stopEvent) {
         var column = this.getItemColumn(item);
-        column.add(Ext.apply(item, {
+        var cmp = column.add(Ext.apply(item, {
             listeners:{
                 scope:this
                 ,collapse:this.onItemToggle
                 ,expand:this.onItemToggle
                 ,close:this.onItemClose
                 ,maximize:this.onItemMaximize
+                ,saveconfig:this.onSaveConfig
             }
         }));
         item.rendered = true;
         column.doLayout();
-        if (!stopEvent)
-            this.fireEvent("setitemposition", item, column.ownerCt.items.indexOf(column), column.items.getCount() - 1);
+        if (!stopEvent) {
+            this.fireEvent("itemadd", cmp, item, column.ownerCt.items.indexOf(column), column.items.getCount() - 1);
+        }
     }
 
     ,getItemColumn:function(item) {
@@ -149,13 +150,12 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,onRemoveItem:function(item) {
-        console.log("ITEM", item);
         Ext.Ajax.request({
             url:this.url
             ,scope:this
             ,params:{
                 xaction:"removeItem"
-                ,id:item.initialConfig.itemId
+                ,id:item.itemId
             }
         });
     }
@@ -356,10 +356,32 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,onItemMove:function(e) {
         this.getLayout().onResize();
-        this.onSetItemPosition(e.panel.items.itemAt(0), e.columnIndex, e.position);
+        this.onSetItemPosition(e.panel/*.items.itemAt(0)*/, e.columnIndex, e.position);
+    }
+
+    ,onItemAdd:function(cmp, item) {
+        Ext.Ajax.request({
+            url:this.url
+            ,params:{
+                xaction:"addItem"
+                ,id:item.itemId
+                ,columnIndex:item.columnIndex
+                ,weight:item.weight
+                ,collapsed:item.collapsed
+                ,config:Ext.encode(item.items)
+            }
+            ,success:function(response, options) {
+                var json = Ext.decode(response.responseText);
+                if (json.success) {
+                    cmp.itemId = item.itemId = json.data.id;
+                }
+            }
+        });
     }
 
     ,onSetItemPosition:function(item, columnIndex, weight) {
+        item.columnIndex = columnIndex;
+        item.weight = weight;
         Ext.Ajax.request({
             url:this.url
             ,params:{
@@ -372,15 +394,12 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,onSaveConfig:function(item, extraConfig) {
-        var index = this.store.findIndex("itemId", item.itemId);
-        var record = this.store.itemAt(index);
-        if (record.config.collapsed !== undefined) delete record.config.collapsed;
         Ext.Ajax.request({
             url:this.url
             ,params:{
                 xaction:"saveConfig"
                 ,id:item.itemId
-                ,config:Ext.encode(Ext.apply(record.config, extraConfig))
+                ,config:Ext.encode(item.initialConfig.items)
             }
         });
     }
