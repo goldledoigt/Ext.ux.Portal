@@ -85,10 +85,10 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
                     '<tpl if="xindex &lt; xcount"><div style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #EFEFEF"></tpl>'
                     ,'<tpl if="xindex == xcount"><div></tpl>'
                         ,'<table style="width:100%"><tr>'
-                        ,'<td style="vertical-align:top;">'
+                        ,'<td style="vertical-align:top;"><center>'
                         ,'<div style="height:58px;width:87px"><img style="margin-top:3px;" width="87" height="58" src="{img}" /></div>'
                         ,'<div style="color:#AAAAAA;font-size: 10px;text-align:center;margin-top:2px">{[values.date.format("d/m/Y H:i")]}</div>'
-                        ,'</td>'
+                        ,'</center></td>'
                         ,'<td style="vertical-align:top;">'
                         ,'<div><a style="font-size:14px;font-weight:bold;color:#000000;text-decoration:none" href="{link}" onmouseout="Ext.fly(this).setStyle(\'text-decoration\', \'none\');" onmouseover="Ext.fly(this).setStyle(\'text-decoration\', \'underline\');">{title}</a></div>'
                         ,'<div>{contentSnippet}</div>'
@@ -110,13 +110,13 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
     }
 
     ,saveConfig:function() {
-        this.url = this.ownerCt.initialConfig.items.url = this.form.url.getValue();
+        this.url = this.form.url.getValue();
         if (this.url && this.url.length) {
             this.removeAll();
             this.add(this.getView());
             this.loadFeed(this.url);
             this.doLayout();
-            this.fireEvent("saveconfig", this.ownerCt);
+            this.fireEvent("saveconfig", this.ownerCt, {url:this.url});
         }
     }
 

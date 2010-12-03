@@ -4,7 +4,11 @@ Ext.ux.portlet.Iframe = Ext.extend(Ext.Panel, {
 
     initComponent:function() {
 
+        // console.log("HEIGHT", this.height);
+
         this.layout = "fit";
+        
+        this.height = 300;
 
         Ext.apply(this, {
             html:'<iframe src="'+this.url+'" width="100%" height="100%" frameborder="0"></iframe>'

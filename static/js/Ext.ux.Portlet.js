@@ -1,4 +1,5 @@
 Ext.ux.Portlet = Ext.extend(Ext.Panel, {
+
     anchor:"100%"
     ,frame:true
     ,collapsible:true

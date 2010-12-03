@@ -33,7 +33,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         this.on({
             afterrender:function() {
                 this.initDropZone();
-                this.loadItems();
+                // this.loadItems();
                 this.mask = new Ext.LoadMask(this.getEl(), {msgCls:"x-portal-mask-loading"});
             }
             ,drop:this.onItemMove
@@ -52,18 +52,18 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         Ext.ux.Portal.superclass.beforeDestroy.call(this);
     }
 
-    ,loadItems:function() {
-        var callback = function(options, success, response) {
-            var items = Ext.decode(response.responseText).data;
-            this.addItems(items, true);
-        };
-        Ext.Ajax.request({
-            url:this.url
-            ,scope:this
-            ,params:{xaction:"getItems"}
-            ,callback:callback
-        });
-    }
+    // ,loadItems:function() {
+    //     var callback = function(options, success, response) {
+    //         var items = Ext.decode(response.responseText).data;
+    //         this.addItems(items, true);
+    //     };
+    //     Ext.Ajax.request({
+    //         url:this.url
+    //         ,scope:this
+    //         ,params:{xaction:"getItems"}
+    //         ,callback:callback
+    //     });
+    // }
 
     ,addItems:function(items, stopEvent) {
         if (!items) return false;
@@ -95,8 +95,10 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,renderItem:function(item, stopEvent) {
         var column = this.getItemColumn(item);
-        var cmp = column.add(Ext.apply(item, {
-            listeners:{
+        var cmp = column.add(Ext.applyIf(item, {
+            layout:"fit"
+            // ,height:200
+            ,listeners:{
                 scope:this
                 ,collapse:this.onItemToggle
                 ,expand:this.onItemToggle
@@ -149,16 +151,17 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         this.fireEvent("removeitem", item);
     }
 
-    ,onRemoveItem:function(item) {
-        Ext.Ajax.request({
-            url:this.url
-            ,scope:this
-            ,params:{
-                xaction:"removeItem"
-                ,id:item.itemId
-            }
-        });
-    }
+    ,onRemoveItem:Ext.emptyFn
+    // ,onRemoveItem:function(item) {
+    //     Ext.Ajax.request({
+    //         url:this.url
+    //         ,scope:this
+    //         ,params:{
+    //             xaction:"removeItem"
+    //             ,id:item.itemId
+    //         }
+    //     });
+    // }
 
     ,initDropZone:function() {
         this.dropZone = new Ext.dd.DropZone(this.body, {
@@ -356,50 +359,59 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,onItemMove:function(e) {
         this.getLayout().onResize();
-        this.onSetItemPosition(e.panel/*.items.itemAt(0)*/, e.columnIndex, e.position);
+        // this.onSetItemPosition(e.panel/*.items.itemAt(0)*/, e.columnIndex, e.position);
     }
 
-    ,onItemAdd:function(cmp, item) {
-        Ext.Ajax.request({
-            url:this.url
-            ,params:{
-                xaction:"addItem"
-                ,id:item.itemId
-                ,columnIndex:item.columnIndex
-                ,weight:item.weight
-                ,collapsed:item.collapsed
-                ,config:Ext.encode(item.items)
-            }
-            ,success:function(response, options) {
-                var json = Ext.decode(response.responseText);
-                if (json.success) {
-                    cmp.itemId = item.itemId = json.data.id;
-                }
-            }
-        });
-    }
+    ,onItemAdd:Ext.emptyFn
+    // ,onItemAdd:function(cmp, item) {
+    //     Ext.Ajax.request({
+    //         url:this.url
+    //         ,params:{
+    //             xaction:"addItem"
+    //             ,id:item.itemId
+    //             ,columnIndex:item.columnIndex
+    //             ,weight:item.weight
+    //             ,collapsed:item.collapsed
+    //             ,config:Ext.encode(item.items)
+    //         }
+    //         ,success:function(response, options) {
+    //             var json = Ext.decode(response.responseText);
+    //             if (json.success) {
+    //                 cmp.itemId = item.itemId = json.data.id;
+    //             }
+    //         }
+    //     });
+    // }
 
-    ,onSetItemPosition:function(item, columnIndex, weight) {
-        item.columnIndex = columnIndex;
-        item.weight = weight;
-        Ext.Ajax.request({
-            url:this.url
-            ,params:{
-                xaction:"setItemPosition"
-                ,id:item.itemId
-                ,columnIndex:columnIndex
-                ,weight:weight
-            }
-        });
-    }
+    // ,onSetItemPosition:function(item, columnIndex, weight) {
+    //     item.columnIndex = columnIndex;
+    //     item.weight = weight;
+    //     Ext.Ajax.request({
+    //         url:this.url
+    //         ,params:{
+    //             xaction:"setItemPosition"
+    //             ,id:item.itemId
+    //             ,columnIndex:columnIndex
+    //             ,weight:weight
+    //         }
+    //     });
+    // }
 
     ,onSaveConfig:function(item, extraConfig) {
+        console.log("item", item.initialConfig.items.xtype);
+        var key = null, config = {};
+        for (key in item.initialConfig.items)
+            config[key] = item.initialConfig.items[key];
+            console.log("CONFIG", config);
+        // var config = Ext.apply(item.initialConfig.items, {});
+
+        Ext.apply(config, extraConfig);
         Ext.Ajax.request({
             url:this.url
             ,params:{
                 xaction:"saveConfig"
                 ,id:item.itemId
-                ,config:Ext.encode(item.initialConfig.items)
+                ,config:Ext.encode(config)
             }
         });
     }
