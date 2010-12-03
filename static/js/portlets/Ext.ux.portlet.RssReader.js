@@ -12,9 +12,13 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
 
         this.bubbleEvents = ["saveconfig"];
 
-        if (this.url && this.url.length)
+        if (this.url && this.url.length) {
             content = this.getView();
-        else content = this.getForm();
+            this.height = Ext.isIE7 ? 200 : null;
+        } else {
+            this.height = Ext.isIE7 ? 100 : null;
+            content = this.getForm();
+        }
 
         Ext.apply(this, {
             items:content
