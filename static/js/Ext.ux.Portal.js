@@ -73,7 +73,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 columnIndex:item.columnIndex || false
                 ,weight:item.weight || 0
                 ,rendered:false
-                ,itemId:item.itemId
+                ,widgetId:item.widgetId
                 ,collapsed:item.collapsed || false
                 ,items:item.config
                 ,title:item.title || "Widget"
@@ -147,7 +147,9 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,removeItem:function(item, column) {
         if (!column) column = item.ownerCt;
+        console.log("REMOVE", item, column);
         column.remove(item, true);
+        console.log("removeItem", item, column, item.widgetId);
         this.fireEvent("removeitem", item);
     }
 
@@ -158,7 +160,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     //         ,scope:this
     //         ,params:{
     //             xaction:"removeItem"
-    //             ,id:item.itemId
+    //             ,id:item.widgetId
     //         }
     //     });
     // }
@@ -283,8 +285,8 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         column.add(item);
     }
 
-    ,itemExists:function(itemId) {
-        var items = this.store.filter("itemId", itemId);
+    ,itemExists:function(widgetId) {
+        var items = this.store.filter("widgetId", widgetId);
         return items.getCount();
     }
 
@@ -351,7 +353,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             url:this.url
             ,params:{
                 xaction:"toggleItem"
-                ,id:item.items.itemAt(0).itemId
+                ,id:item.items.itemAt(0).widgetId
                 ,collapsed:item.collapsed
             }
         });
@@ -368,7 +370,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     //         url:this.url
     //         ,params:{
     //             xaction:"addItem"
-    //             ,id:item.itemId
+    //             ,id:item.widgetId
     //             ,columnIndex:item.columnIndex
     //             ,weight:item.weight
     //             ,collapsed:item.collapsed
@@ -377,7 +379,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     //         ,success:function(response, options) {
     //             var json = Ext.decode(response.responseText);
     //             if (json.success) {
-    //                 cmp.itemId = item.itemId = json.data.id;
+    //                 cmp.widgetId = item.widgetId = json.data.id;
     //             }
     //         }
     //     });
@@ -390,7 +392,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     //         url:this.url
     //         ,params:{
     //             xaction:"setItemPosition"
-    //             ,id:item.itemId
+    //             ,id:item.widgetId
     //             ,columnIndex:columnIndex
     //             ,weight:weight
     //         }
@@ -410,7 +412,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             url:this.url
             ,params:{
                 xaction:"saveConfig"
-                ,id:item.itemId
+                ,id:item.widgetId
                 ,config:Ext.encode(config)
             }
         });
