@@ -133,7 +133,14 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
         }
         this.renderAll(ct, this.innerCt);
 
-        var size = Ext.isIE && target.dom != Ext.getBody().dom ? target.getStyleSize() : target.getViewSize();
+        var styleSize = target.getStyleSize();
+        var viewSize = target.getViewSize();
+
+        var size = Ext.isIE && target.dom != Ext.getBody().dom ? styleSize : viewSize;
+        if (styleSize.width === viewSize.width)
+            size.width -= 15;
+
+        if (!this.lastClientWidth) this.lastClientWidth = size.width;
 
         if(size.width < 1 && size.height < 1) { // display none?
             return;
@@ -180,7 +187,6 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         this.setLastColumnWidth(cs);
         var cw = 0;
-
         for(i = 0; i < len; i++){
             c = cs[i];
             cel = c.getEl();
@@ -286,11 +292,13 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
             spare = itemWidth - 100;
         }
 
-        var c1 = items[0].el.dom.clientWidth;
-        var c2 = items[1].el.dom.clientWidth;
-        var c3 = items[2].el.dom.clientWidth;
-        var l = (c1/(c1+c2+c3)).toFixed(2);
-        var r = (c3/(c1+c2+c3)).toFixed(2);
+        var count = 0;
+        for (var i = 0, l = items.length; i < l; i++) {
+            count += items[i].el.dom.clientWidth;
+        }
+
+        var l = (items[0].el.dom.clientWidth/count).toFixed(2);
+        var r = (items[items.length-1].el.dom.clientWidth/count).toFixed(2);
 
 	if (this.lastLeft && this.lastRight && this.lastLeft == l && this.lastRight == r) {
 	  return;
@@ -312,6 +320,7 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
     },
 
     getLastColumnWidth:function(index, visibleColumnsCount) {
+        // console.log("getLastColumnWidth", this.lastColumnsWidth[visibleColumnsCount-1][index]);
         return this.lastColumnsWidth[visibleColumnsCount-1][index];
     }
 
@@ -337,9 +346,6 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
     onResize: function() {
         if (this.split) {
             var items = this.container.items.items;
-
-            // if (items[0].columnWidth)
-            //     this.setLastColumnWidth();
             
             if (items[0].rendered) {
                 var tw = 0, vc = 0;
@@ -351,8 +357,10 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
                 }
 
                 for (var i = 0; i < items.length; i++) {
-                    var c = items[i];
-                    c.columnWidth = (c.el.getWidth() + c.el.getMargins('lr')) / tw;
+                    var c = items[i],
+                    w = (c.el.getWidth() + c.el.getMargins('lr')) / tw;
+                    // console.log("width", c.el.getWidth(), w);
+                    c.columnWidth = w;
                 }
 
             }

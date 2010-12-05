@@ -1,10 +1,12 @@
 Ext.ns("Ext.ux");
-
+var pof;
 Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ddGroup:"PortalDD"
 
     ,columnCount:3
+    
+    ,maxColumnCount:3
 
     ,url:false
 
@@ -28,6 +30,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
             ,dragover:true
             ,beforedrop:true
             ,drop:true
+            ,columncountchange:true
         });
 
         this.on({
@@ -35,11 +38,17 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 this.initDropZone();
                 // this.loadItems();
                 this.mask = new Ext.LoadMask(this.getEl(), {msgCls:"x-portal-mask-loading"});
+                if (this.columnCount !== this.maxColumnCount) {
+                    var c = parseInt(this.columnCount);
+                    this.columnCount = this.maxColumnCount;
+                    this.changeColumnsCount(c);
+                }
             }
             ,drop:this.onItemMove
             ,removeItem:this.onRemoveItem
             ,itemadd:this.onItemAdd
         });
+        pof = this;
     }
 
     ,initEvents : function(){
@@ -147,9 +156,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,removeItem:function(item, column) {
         if (!column) column = item.ownerCt;
-        console.log("REMOVE", item, column);
         column.remove(item, true);
-        console.log("removeItem", item, column, item.widgetId);
         this.fireEvent("removeitem", item);
     }
 
@@ -178,9 +185,9 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
 
     ,getColumnsConfig:function() {
         var columns = [], style, width;
-        for (var i = 0; i < this.columnCount; i ++) {
+        for (var i = 0; i < this.maxColumnCount; i ++) {
             style = "padding:"+this.getColumnPadding(i)+";";
-            width = 1/this.columnCount;
+            width = 1/this.maxColumnCount;
             columns.push({
                 columnWidth:width
                 ,hideMode:"offsets"
@@ -202,7 +209,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     ,changeColumnsCount:function(n) {
         if (!this.rendered) return;
         if (this.columnCount > n) {
-
             var hiddenColumns = [];
             var availableColumns = [];
             this.items.each(function(c, index) {
@@ -214,7 +220,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 }
             }, this);
             this.hideColumns(hiddenColumns, availableColumns);
-
         } else {
             var shownColumns = [];
             var availableColumns = [];
@@ -230,11 +235,13 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         this.getLayout().onResize();
 
         this.columnCount = n;
+        this.fireEvent("columncountchange", this, this.columnCount);
     }
 
     ,showColumns:function(columns, availableColumns) {
         Ext.each(columns, function(c, index) {
             c.show();
+            c.el.setWidth(c.visibleWidth);
             Ext.each(availableColumns, function(ac) {
                 ac.items.each(function(item) {
                     if (item.columnIndex === c.columnIndex) {
@@ -256,11 +263,14 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
                 item.columnIndex = column.columnIndex;
                 items.push(item);
             });
-            column.visibleWidth = column.el.getWidth();
+            if (column.el)
+                column.visibleWidth = column.el.getWidth();
+            else column.visibleWidth = 400;
             column.hide();
         }, this);
         Ext.each(items, function(item, index) {
             targetColumn = this.getTargetColumn(availableColumns);
+            // console.log("index", item.columnIndex);
             this.moveItem(item, targetColumn);
         }, this);
         Ext.each(availableColumns, function(c) {
@@ -283,6 +293,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     ,moveItem:function(item, column) {
         item.el.dom.parentNode.removeChild(item.el.dom);
         column.add(item);
+        this.fireEvent("drop", {panel:item, columnIndex:column.columnIndex, weight:column.items.getCount()-1});
     }
 
     ,itemExists:function(widgetId) {
@@ -291,7 +302,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     }
 
     ,resizeFullScreenItem:function(portal, width, height) {
-        // this.mask.show();
         var size = this.getLayout().getLayoutTargetSize();
         size.height -= Ext.getScrollBarWidth();
         size.width -= Ext.getScrollBarWidth();
@@ -400,11 +410,9 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
     // }
 
     ,onSaveConfig:function(item, extraConfig) {
-        console.log("item", item.initialConfig.items.xtype);
         var key = null, config = {};
         for (key in item.initialConfig.items)
             config[key] = item.initialConfig.items[key];
-            console.log("CONFIG", config);
         // var config = Ext.apply(item.initialConfig.items, {});
 
         Ext.apply(config, extraConfig);
