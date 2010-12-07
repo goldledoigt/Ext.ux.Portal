@@ -19,4 +19,4 @@ Ext.ux.portlet.Iframe = Ext.extend(Ext.Panel, {
 
 });
 
-Ext.reg("iframe", Ext.ux.portlet.Iframe);
+Ext.reg("portlet-iframe", Ext.ux.portlet.Iframe);

@@ -1,6 +1,6 @@
 Ext.ns("Ext.ux.portlet");
 
-Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
+Ext.ux.portlet.ProxyRssReader = Ext.extend(Ext.Panel, {
 
     initComponent:function() {
 
@@ -22,7 +22,7 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
             items:content
         });
 
-        Ext.ux.portlet.RssReader.superclass.initComponent.apply(this, arguments);
+        Ext.ux.portlet.ProxyRssReader.superclass.initComponent.apply(this, arguments);
         
         this.on({
             afterrender:function() {
@@ -40,11 +40,27 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
             ,padding:"5"
             ,labelAlign:"top"
             ,items:[{
-                xtype:"textfield"
-                ,fieldLabel:"RSS FEED URL"
+                xtype:"combo"
+                ,displayField:"name"
+                ,valueField:"url"
+                ,name:"feed_name"
+                ,hiddenName:"url"
+                ,typeAhead:true
+                ,forceSelection:true
+                ,triggerAction:"all"
+                ,selectOnFocus:true
+                ,mode:"local"
+                ,store:new Ext.data.JsonStore({
+                    autoLoad:true
+                    ,url:"php/controller.php"
+                    ,root:"data"
+                    ,fields:["url", "name"]
+                    ,baseParams:{xaction:"getProxyRss"}
+                })
+                ,fieldLabel:"INTERNAL FEED URL"
                 ,anchor:"0"
                 ,ref:"url"
-                ,emptyText:"http://www.domaine.com/feed.xml"
+                ,emptyText:"Choose a feed url..."
             }]
             ,buttons:[{
                 text:"OK"
@@ -57,31 +73,17 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
 
     ,getView:function() {
         this.view = new Ext.DataView({
-            store:(__PROXY__ && __PROXY__.length)
-                ? new Ext.data.Store({
-                    url:__PROXY__
-                    ,reader: new Ext.data.XmlReader({
-                        record:'item'
-                    }, [
-                        'title', "link"
-                        ,{name:"contentSnippet", mapping:"description", convert:this.filterContent}
-                        ,{name:"date", mapping:"pubDate", type:"date"}
-                        ,{name:"img", mapping:"enclosure@url", defaultValue:"http://cdn2.iconfinder.com/data/icons/DarkGlass_Reworked/128x128/apps/knode2.png"}
-                    ])
-                    // ,listeners:{
-                    //     load:function() {
-                    //         console.log("load XML", arguments);
-                    //     }
-                    // }
-                })
-                : new Ext.data.JsonStore({
-                    root:"feed.entries"
-                    ,fields:[
-                        "title","link", "content", "contentSnippet"
-                        ,{name:"date", mapping:"publishedDate", type:"date"}
-                        ,{name:"img", defaultValue:"http://cdn2.iconfinder.com/data/icons/DarkGlass_Reworked/128x128/apps/knode2.png"}
-                    ]
-                })
+            store:new Ext.data.Store({
+                url:this.url
+                ,reader: new Ext.data.XmlReader({
+                    record:'item'
+                }, [
+                    'title', "link"
+                    ,{name:"contentSnippet", mapping:"description", convert:this.filterContent}
+                    ,{name:"date", mapping:"pubDate", type:"date"}
+                    ,{name:"img", mapping:"enclosure@url", defaultValue:"http://cdn2.iconfinder.com/data/icons/DarkGlass_Reworked/128x128/apps/knode2.png"}
+                ])
+            })
             ,tpl:new Ext.XTemplate(
                 '<tpl for=".">',
                     '<tpl if="xindex &lt; xcount"><div style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #EFEFEF"></tpl>'
@@ -113,6 +115,7 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
 
     ,saveConfig:function() {
         this.url = this.form.url.getValue();
+        console.log("URL", this.url);
         if (this.url && this.url.length) {
             this.removeAll();
             this.add(this.getView());
@@ -123,14 +126,7 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
     }
 
     ,loadFeed:function(url) {
-        if (__PROXY__ && __PROXY__.length) {
-            this.view.store.load();
-        } else {
-            var feed = new google.feeds.Feed(url);
-            feed.load((function(data) {
-                this.view.store.loadData(data);
-            }).createDelegate(this));
-        }
+        this.view.store.load();
     }
 
     ,filterContent:function(value, record) {
@@ -139,4 +135,4 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
 
 });
 
-Ext.reg("portlet-rssreader", Ext.ux.portlet.RssReader);
+Ext.reg("portlet-proxyrssreader", Ext.ux.portlet.ProxyRssReader);
