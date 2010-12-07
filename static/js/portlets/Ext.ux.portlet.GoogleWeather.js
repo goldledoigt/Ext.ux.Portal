@@ -1,8 +1,8 @@
 Ext.ns("Ext.ux.portlet");
 
-cbfunc = function() {
-    console.log("cbfunc", arguments);
-}
+// cbfunc = function() {
+//     console.log("cbfunc", arguments);
+// }
 
 Ext.ux.portlet.GoogleWeather = Ext.extend(Ext.Panel, {
 
@@ -15,7 +15,7 @@ Ext.ux.portlet.GoogleWeather = Ext.extend(Ext.Panel, {
         this.yahooWeatherApiQuery = 'use "'+this.yahooWeatherServiceUrl+'" as we; select * from we where location="berlin,germany" and unit="c"';
         this.yahooWeatherApiUrl = "http://query.yahooapis.com/v1/public/yql?q=" + this.yahooWeatherApiQuery + this.yahooWeatherServiceParams;
 
-        console.log("url", this.yahooWeatherApiUrl);
+        // console.log("url", this.yahooWeatherApiUrl);
 
         var content = false;
 
@@ -113,7 +113,7 @@ Ext.ux.portlet.GoogleWeather = Ext.extend(Ext.Panel, {
     }
 
     ,readCallback:function(action, trans, res) {
-        console.log("res", res);
+        // console.log("res", res);
     }
 
 });

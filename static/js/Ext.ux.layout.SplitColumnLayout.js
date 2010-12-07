@@ -320,7 +320,6 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
     },
 
     getLastColumnWidth:function(index, visibleColumnsCount) {
-        // console.log("getLastColumnWidth", this.lastColumnsWidth[visibleColumnsCount-1][index]);
         return this.lastColumnsWidth[visibleColumnsCount-1][index];
     }
 
@@ -359,7 +358,6 @@ Ext.layout.SplitColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
                 for (var i = 0; i < items.length; i++) {
                     var c = items[i],
                     w = (c.el.getWidth() + c.el.getMargins('lr')) / tw;
-                    // console.log("width", c.el.getWidth(), w);
                     c.columnWidth = w;
                 }
 

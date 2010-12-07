@@ -68,11 +68,6 @@ Ext.ux.portlet.RssReader = Ext.extend(Ext.Panel, {
                         ,{name:"date", mapping:"pubDate", type:"date"}
                         ,{name:"img", mapping:"enclosure@url", defaultValue:"http://cdn2.iconfinder.com/data/icons/DarkGlass_Reworked/128x128/apps/knode2.png"}
                     ])
-                    // ,listeners:{
-                    //     load:function() {
-                    //         console.log("load XML", arguments);
-                    //     }
-                    // }
                 })
                 : new Ext.data.JsonStore({
                     root:"feed.entries"

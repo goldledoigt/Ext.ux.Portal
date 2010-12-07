@@ -115,7 +115,6 @@ Ext.ux.portlet.ProxyRssReader = Ext.extend(Ext.Panel, {
 
     ,saveConfig:function() {
         this.url = this.form.url.getValue();
-        console.log("URL", this.url);
         if (this.url && this.url.length) {
             this.removeAll();
             this.add(this.getView());

@@ -36,12 +36,11 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         this.on({
             afterrender:function() {
                 this.initDropZone();
-                // this.loadItems();
                 this.mask = new Ext.LoadMask(this.getEl(), {msgCls:"x-portal-mask-loading"});
-                if (this.columnCount !== this.maxColumnCount) {
+                if (this.columnCount != this.maxColumnCount) {
                     var c = parseInt(this.columnCount);
                     this.columnCount = this.maxColumnCount;
-                    this.changeColumnsCount(c);
+                    this.changeColumnsCount(c, true);
                 }
             }
             ,drop:this.onItemMove
@@ -206,7 +205,7 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         else return "10px 10px 10px 5px";
     }
 
-    ,changeColumnsCount:function(n) {
+    ,changeColumnsCount:function(n, stopEvent) {
         if (!this.rendered) return;
         if (this.columnCount > n) {
             var hiddenColumns = [];
@@ -235,7 +234,8 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         this.getLayout().onResize();
 
         this.columnCount = n;
-        this.fireEvent("columncountchange", this, this.columnCount);
+        if (!stopEvent)
+            this.fireEvent("columncountchange", this, this.columnCount);
     }
 
     ,showColumns:function(columns, availableColumns) {
@@ -270,7 +270,6 @@ Ext.ux.Portal = Ext.extend(Ext.Panel, {
         }, this);
         Ext.each(items, function(item, index) {
             targetColumn = this.getTargetColumn(availableColumns);
-            // console.log("index", item.columnIndex);
             this.moveItem(item, targetColumn);
         }, this);
         Ext.each(availableColumns, function(c) {
