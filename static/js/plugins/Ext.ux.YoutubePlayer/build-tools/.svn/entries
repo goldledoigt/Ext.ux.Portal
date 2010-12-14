@@ -1,0 +1,31 @@
+8
+
+dir
+25
+http://ext-ux-youtubeplayer.googlecode.com/svn/trunk/build-tools
+http://ext-ux-youtubeplayer.googlecode.com/svn
+
+
+
+2009-07-16T23:42:08.465217Z
+15
+tsuckowhomberg
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+31cd7578-c14d-0410-bd93-073629defdb8
+
+win32
+dir
+

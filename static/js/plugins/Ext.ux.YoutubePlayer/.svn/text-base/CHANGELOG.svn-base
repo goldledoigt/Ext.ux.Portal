@@ -1,0 +1,59 @@
+Version 0.4
+19-March-2010
+ - enhancement: Updated player features with V3 of Youtube Chromeless API
+(choose resolution)
+ - fixed: changed url to vendor player Api since old one was broken
+
+04-January-2010
+ - enhancement: minor fixes, compatibility for Ext 3.0.3
+
+Version 0.3RC5
+17-July-2009
+ - enhancement: added compatibility for Ext JS 3.0.0
+ - enhancement: replaced jsb build process with yuicompressor, including batch file
+ - enhancement: added build-file ext-ux-youtubeplayer-all-debug.js
+
+Version 0.3RC4
+13-May-2009
+
+ - fixed: fixed a problem where the onYoutubePlayerReady method would be called
+twice due to initializing the ratio mode; delegated style for ratio mode to css
+files
+ - enhancement: minor doc changes
+
+Version 0.3RC3
+18-April-2009
+
+- fixed: typo in jsbuilder config would not save the ext-ux-youtubeplayer-all.js
+under the given naming conventions
+
+Version 0.3RC2
+18-April-2009
+
+ - fixed: (YoutubePlayer.js) call to "getInnerWidth()" and "getInnerHeight()"
+replaced with "getWidth()"/"getHeight()" since the component does now extend Ext.FlashComponent
+ - enhancement: (YoutubePlayer.js) if method "onYoutubePlayerReady" is
+already defined in the window-scope, an exception will now be thrown
+ - enhancement: (YoutubePlayerControl.js) eject button is now disabled by
+default and gets enabled if the attached player fires the "ready" event
+
+Version 0.3RC1
+16-April-2009
+
+Note: API changed in Version 0.3RC1 and does not work with Ext JS < 3.0
+Note: Ext.ux.YoutubePlayer now extends Ext.FlashComponent. No third party libraries
+are needed anymore.
+
+- enhancements: Component now works with Ext3.0RC1
+
+Version 0.2
+18-June-2008
+
+Note: API changed in Version 0.2 and does not work with Ext.ux.Media < 1.0RC1
+
+- enhancements:
+ - Ext.ux.YoutubePlayer: updated source to work with RC1 of Ext.ux.Media
+ - Ext.ux.YoutubePlayer.Control: minor code cleanups
+
+Version 0.1
+16-June-2008

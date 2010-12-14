@@ -1,0 +1,16 @@
+.ext-ux-youtubeplayer.x-hide-offsets {
+    left:-10000px!important;
+    top:-10000px!important;
+}
+
+.ext-ux-youtubeplayer {
+    background-color:#000000;
+}
+
+.ext-ux-youtubeplayer.strict {
+    position:relative;
+}
+
+.ext-ux-youtubeplayer.stretch {
+    position:static;
+}

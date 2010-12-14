@@ -1,0 +1,58 @@
+
+.ext-ux-youtubeplayer-control .play {
+    background-image:url(../images/control_play_blue.png) !important;
+}
+
+.ext-ux-youtubeplayer-control .eject {
+    background-image:url(../images/control_eject_blue.png) !important;
+}
+
+.ext-ux-youtubeplayer-control .stop {
+    background-image:url(../images/control_stop_blue.png) !important;
+}
+
+.ext-ux-youtubeplayer-control .pause {
+    background-image:url(../images/control_pause_blue.png) !important;
+}
+
+.ext-ux-youtubeplayer-control .start {
+    background-image:url(../images/control_start_blue.png) !important;
+}
+
+.ext-ux-youtubeplayer-control .end {
+    background-image:url(../images/control_end_blue.png) !important;
+}
+
+.ext-ux-youtubeplayer-control .quality {
+    background-image:url(../images/control_quality.png) !important;
+}
+
+.ext-ux-youtubeplayer-control-muteIcon {
+    background-image:url(../images/sound_mute.png) !important;
+}
+
+.ext-ux-youtubeplayer-control-volumeIcon {
+    background-image:url(../images/sound_none.png) !important;
+}
+
+.ext-ux-youtubeplayer-control-slider .hbar {
+    border: solid 1px #B5B8C8;
+    background-color: white;
+    background-image:url(../images/youtubeplayer-slider-progress.png);
+    background-position:-1280px 0;
+    background-repeat:no-repeat;
+    height: 1px;
+    z-index:1;
+    position: relative;
+    top: -12px;
+}
+
+.ext-ux-youtubeplayer-control-slider.x-slider-horz,
+.ext-ux-youtubeplayer-control-slider.x-slider-horz .x-slider-end,
+.ext-ux-youtubeplayer-control-slider.x-slider-horz .x-slider-inner {
+    background-image:none!important;
+}
+
+.ext-ux-youtubeplayer-control-slider.x-slider-horz .x-slider-thumb {
+    z-index:2;
+}
